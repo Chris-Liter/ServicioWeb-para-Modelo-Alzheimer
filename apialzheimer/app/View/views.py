@@ -10,15 +10,16 @@ from io import BytesIO
 import io
 from PIL import Image
 from tensorflow.keras.preprocessing import image
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
 
 CLASS_NAMES = ['Mild Demented', 'Moderate Demented', 'Non-Demented', 'Very Mild Demented']
 #loaded_model = modeloCNN.modeloCNN.cargarRed("redCNN.h5")
 
 class Clasificacion():
 
-    
-
-    
     @csrf_exempt
     def predict_image(request):
         if request.method == 'POST':
@@ -82,3 +83,12 @@ class Clasificacion():
     
 
     
+@api_view(['POST'])
+def procesar_usuario(request):
+    # Acceder directamente a los datos del body
+    email = request.data.get('email')
+    password = request.data.get('password')
+    print(email)
+
+    # Ahora puedes usar estos datos
+    return Response({"email": email, "message": "Datos procesados correctamente"})

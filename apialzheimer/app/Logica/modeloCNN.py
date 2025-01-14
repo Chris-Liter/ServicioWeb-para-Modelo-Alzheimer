@@ -6,34 +6,17 @@ import pandas as pd
 from app.Logica import modeloCNN
 import pickle
 import keras
-from tf_explain.core.integrated_gradients import IntegratedGradients  # Asegúrate de tener el módulo correcto para IntegratedGradients
+from tf_explain.core.integrated_gradients import IntegratedGradients
 
- 
 modelo = None
 target = None
+
 class modeloCNN():
     class_names = ['Mild Demented', 'Moderate Demented', 'Non-Demented', 'Very Mild Demented']
-            #Función para cargar red neuronal 
-    # def cargarRed():  
-    #     model = load_model("/ServidorDjango/apialzheimer/apialzheimer/modelo/redCNN.h5")
-    #     print("Red Neuronal Cargada desde Archivo") 
-    #     return model
-
-
-    # def cargar_imagen(self, image_path, target_size=(224, 224)):
-    #         """
-    #         Cargar y preprocesar una imagen para la predicción.
-    #         """
-    #         img = image.load_img(image_path, target_size=target_size)
-    #         img_array = image.img_to_array(img)
-    #         img_array = np.expand_dims(img_array, axis=0)  # Añadir dimensión de batch
-    #         img_array = img_array / 256.0  # Normalizar como se hizo durante el entrenamiento
-    #         return img_array
     
-
     def predecir_imagen(image_array, nombre):
         """
-        Realiza la predicción de la clase de la imagen.
+        Realiza la predicción de la clase de la imagen y su probabilidad.
         """
         print("Llega al metodo para predecir ")
         print(nombre)
@@ -41,22 +24,29 @@ class modeloCNN():
         global target
         loaded_model = load_model(nombre)
         
+        # Realizamos la predicción (probabilidades para todas las clases)
         predictions = loaded_model.predict(image_array)
-    
-        # Obtener la clase predicha
+        
+        # Obtener la clase predicha (con mayor probabilidad)
         predicted_class = np.argmax(predictions, axis=1)[0]
         target = predicted_class
+        
         # Obtener el nombre de la clase
-        class_names = ['Mild Demented', 'Moderate Demented', 'Non-Demented', 'Very Mild Demented']
-        predicted_class_name = class_names[predicted_class]
+        predicted_class_name = modeloCNN.class_names[predicted_class]
+        
+        # Obtener la probabilidad de la clase predicha
+        predicted_probability = predictions[0][predicted_class] * 100  # Multiplicamos por 100 para obtener el porcentaje
+        
         modelo = loaded_model
-        return predicted_class_name
+        
+        return predicted_class_name, predicted_probability
     
     def explicar(img_array):
         explainer = IntegratedGradients()
         global modelo
         global target
         print("Despues de modelo explainer")
+        
         explanations = explainer.explain(
             validation_data=(img_array, target),  # Pasar la imagen y la clase objetivo
             model=modelo,

@@ -31,6 +31,7 @@ urlpatterns = [
     #re_path('api/post/', views.manejar_post),
     #re_path(r'^nuevasolicitud/$',views.Clasificacion.determinarAprobacion),
     re_path(r'^predecir/',views.Clasificacion.predict_image),
+    re_path(r'^login/',views.procesar_usuario)
     #re_path(r'^predecirIOJson/',views.Clasificacion.predecirIOJson),
 
 ]
