@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-33&_h9xsd5bpu_ysi*$4%wr+)-d&xg@3lx)+@l#$e6r!qln9%9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.0.117', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -38,11 +38,15 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'app.apps.AppAlzheimer',#Se incluye la app
     'rest_framework',
     'corsheaders',
     'drf_yasg',
-    'polls'
+    'polls',
+    'app.apps.AppAlzheimer', #Se incluye la app
+    
+    #'app',
+
+    #"app_label"
 ]
 
 REST_FRAMEWORK = {

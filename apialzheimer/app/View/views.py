@@ -13,6 +13,9 @@ from tensorflow.keras.preprocessing import image
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from app.models import User, Radiografia
+from django.shortcuts import get_object_or_404
+
 
 
 CLASS_NAMES = ['Mild Demented', 'Moderate Demented', 'Non-Demented', 'Very Mild Demented']
@@ -33,8 +36,8 @@ class Clasificacion():
                     return JsonResponse({"error": "No image data provided"}, status=400)
 
                 # Eliminar la cabecera 'data:image/jpeg;base64,' si está presente
-                if image_data.startswith('data:image'):
-                    image_data = image_data.split(',')[1]
+                # if image_data.startswith('data:image'):
+                #     image_data = image_data.split(',')[1]
 
                 # Decodificar la imagen desde base64
                 image_data = base64.b64decode(image_data)
@@ -82,13 +85,49 @@ class Clasificacion():
         return JsonResponse({"error": "Method not allowed"}, status=405)
     
 
-    
+@csrf_exempt
 @api_view(['POST'])
 def procesar_usuario(request):
+    try:
     # Acceder directamente a los datos del body
-    email = request.data.get('email')
-    password = request.data.get('password')
-    print(email)
+        email = request.data.get('email')
+        password = request.data.get('password')
+        user = User.objects.get(email = email, password = password)
+        if user:
+            return Response({"email": email, "message": "Si existe en la base"})
+        else:
+            return Response({"Error": "No existe el usuario"})
+    except Exception as e:
+        return Response({e})
 
     # Ahora puedes usar estos datos
-    return Response({"email": email, "message": "Datos procesados correctamente"})
+        
+@csrf_exempt
+@api_view(['POST'])
+def Crear_Usuario(request):
+
+    email = request.data.get('email')
+    name = request.data.get('name')
+    password = request.data.get('password')
+    
+    usuario = User(name = name, email = email, password = password)
+    usuario.save()
+    return Response({"name: ": name, "email: ": email, "password: ": password })
+
+
+        
+@csrf_exempt
+@api_view(['POST'])
+def Crear_Radiografia(request):
+    email = request.data.get('email')
+    imagen64 = request.data.get('imagen64')
+    explicacion = request.data.get('explicacion')
+
+    usuario = get_object_or_404(User, email=email)
+    if usuario != '' and imagen64 != '' and explicacion != '':
+        radio = Radiografia(usuario = usuario, imagen_base64 = imagen64, explicacion = explicacion)
+        radio.save()
+        success = True
+        return Response({"Radiografia guardada": success})
+    else:
+        return Response({"Llena los datos para guardar"})

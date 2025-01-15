@@ -11,8 +11,9 @@ from tf_explain.core.integrated_gradients import IntegratedGradients
 modelo = None
 target = None
 
+class_names = ['Mild Demented', 'Moderate Demented', 'Non-Demented', 'Very Mild Demented']
+
 class modeloCNN():
-    class_names = ['Mild Demented', 'Moderate Demented', 'Non-Demented', 'Very Mild Demented']
     
     def predecir_imagen(image_array, nombre):
         """
@@ -32,14 +33,14 @@ class modeloCNN():
         target = predicted_class
         
         # Obtener el nombre de la clase
-        predicted_class_name = modeloCNN.class_names[predicted_class]
+        predicted_class_name = class_names[predicted_class]
         
         # Obtener la probabilidad de la clase predicha
         predicted_probability = predictions[0][predicted_class] * 100  # Multiplicamos por 100 para obtener el porcentaje
         
         modelo = loaded_model
         
-        return predicted_class_name, predicted_probability
+        return predicted_class_name
     
     def explicar(img_array):
         explainer = IntegratedGradients()
