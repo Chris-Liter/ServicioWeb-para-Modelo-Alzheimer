@@ -7,6 +7,8 @@ from app.Logica import modeloCNN
 import pickle
 import keras
 from tf_explain.core.integrated_gradients import IntegratedGradients
+from app.models import User, Radiografia
+from django.shortcuts import get_object_or_404
 
 modelo = None
 target = None
@@ -54,3 +56,13 @@ class modeloCNN():
             class_index=target  # Especificar la clase objetivo
         )
         return explanations
+
+    def crearRadiografia(request):
+        email = request.data.get('email')
+        imagen64 = request.data.get('imagen64')
+        explicacion = request.data.get('explicacion')
+
+        usuario = get_object_or_404(User, email=email)
+        if usuario != '' and imagen64 != '' and explicacion != '':
+            radio = Radiografia(usuario = usuario, imagen_base64 = imagen64, explicacion = explicacion)
+            radio.save()

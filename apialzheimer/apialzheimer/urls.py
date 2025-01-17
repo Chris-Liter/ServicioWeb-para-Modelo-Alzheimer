@@ -26,13 +26,15 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
+
 urlpatterns = [
     path("admin/", admin.site.urls),
-    #re_path('api/post/', views.manejar_post),
     #re_path(r'^nuevasolicitud/$',views.Clasificacion.determinarAprobacion),
     re_path(r'^predecir/',views.Clasificacion.predict_image),
-    re_path(r'^login/',views.procesar_usuario),
+    re_path(r'^login/',views.Clasificacion.procesar_usuario),
     #re_path(r'^predecirIOJson/',views.Clasificacion.predecirIOJson),
-    re_path(r'^crearusuario/', views.Crear_Usuario),
-    re_path(r'^saveRadiografia/', views.Crear_Radiografia)
+    re_path(r'^crearusuario/', views.Clasificacion.Crear_Usuario),
+    #re_path(r'^saveRadiografia/', views.Clasificacion.Crear_Radiografia),
+    re_path(r'^make/', views.Clasificacion.MakePrediction),
+    path(r'^getRadio/<str:email>/', views.Clasificacion, name='traerRadio')
 ]
