@@ -10,6 +10,7 @@ from io import BytesIO
 import io
 from PIL import Image
 from tensorflow.keras.preprocessing import image
+from django.contrib.auth.hashers import check_password
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -76,39 +77,44 @@ class Clasificacion:
 
         
     #@staticmethod
+
     @csrf_exempt
     @api_view(['POST'])
     def procesar_usuario(request):
         try:
-        # Acceder directamente a los datos del body
+            # Acceder directamente a los datos del body
             email = request.data.get('email')
             password = request.data.get('password')
-            user = User.objects.get(email = email, password = password)
-            if user:
-                return Response({"email": email, 'name': user.name, "message": "Si existe en la base"})
-            else:
-                return Response({"Error": "No existe el usuario"})
-        except Exception as e:
-            return Response({e})
 
-        # Ahora puedes usar estos datos
-            
+            # Buscar usuario en la base de datos
+            user = User.objects.get(email=email, password=password)
+            # Devolver respuesta si el usuario existe
+            return Response({ "message": email, "success": True } , status=200)
+
+        except User.DoesNotExist:
+            # Manejar cuando el usuario no existe
+            return Response({"error": "Usuario no encontrado"}, status=404)
+
+        except Exception as e:
+            # Manejar cualquier otra excepción
+            return Response({"error": str(e)}, status=500)
+
+    # Ahora puedes usar estos datos
+
+
+                
     @csrf_exempt
     @api_view(['POST'])
     def Crear_Usuario(request):
 
+        name = request.data.get('username')
         email = request.data.get('email')
-        name = request.data.get('name')
         password = request.data.get('password')
         
         usuario = User(name = name, email = email, password = password)
         usuario.save()
         return Response({"name: ": name, "email: ": email, "password: ": password })
 
-            #success = True
-            #return Response({"Radiografia guardada": success})
-        #else:
-        #    return Response({"Llena los datos para guardar"})
 
     @staticmethod
     def crearRadiografia(request):
@@ -125,7 +131,7 @@ class Clasificacion:
     @csrf_exempt
     @api_view(['POST'])
     def MakePrediction(request):
-        clasificacion = Clasificacion()
+        #clasificacion = Clasificacion()
         global CLASE
         if request.method =='POST':
             foto = request.data.get("foto")
@@ -146,10 +152,8 @@ class Clasificacion:
             radiograph = {"email": email, "imagen64": foto, "explicacion": grad}
             clasificacion.crearRadiografia(radiograph)
             return Response({"Radiografia": grad, "Prediccion": CLASE})
-        print('nada')
-        return Response({"error": "Método no permitido"}, status=405)
-            
 
+        
     @csrf_exempt
     @api_view(['GET'])
     def traerRadio(request):
