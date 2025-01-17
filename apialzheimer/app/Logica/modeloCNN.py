@@ -12,6 +12,7 @@ from django.shortcuts import get_object_or_404
 
 modelo = None
 target = None
+certeza = None
 
 class_names = ['Mild Demented', 'Moderate Demented', 'Non-Demented', 'Very Mild Demented']
 
@@ -25,6 +26,7 @@ class modeloCNN():
         print(nombre)
         global modelo
         global target
+        global certeza
         loaded_model = load_model(nombre)
         
         # Realizamos la predicción (probabilidades para todas las clases)
@@ -39,6 +41,7 @@ class modeloCNN():
         
         # Obtener la probabilidad de la clase predicha
         predicted_probability = predictions[0][predicted_class] * 100  # Multiplicamos por 100 para obtener el porcentaje
+        certeza = predicted_probability
         
         modelo = loaded_model
         

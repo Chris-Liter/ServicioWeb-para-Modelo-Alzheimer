@@ -131,7 +131,7 @@ class Clasificacion:
             foto = request.data.get("foto")
             js = {"foto": foto }
 
-            json_data = json.dumps(js)
+            #json_data = json.dumps(js)
             email = request.data.get("email")
             #print(json_data)
             resp = Clasificacion.predict_image(str(foto))
@@ -145,16 +145,36 @@ class Clasificacion:
             CLASE = pred
             radiograph = {"email": email, "imagen64": foto, "explicacion": grad}
             clasificacion.crearRadiografia(radiograph)
-            return Response({"Datos guardados": "Radiografia", "Prediccion": CLASE})
+            return Response({"Radiografia": grad, "Prediccion": CLASE})
         print('nada')
         return Response({"error": "Método no permitido"}, status=405)
             
 
     @csrf_exempt
-    #@api_view(['GET'])
-    def traerRadio(request, email):
+    @api_view(['GET'])
+    def traerRadio(request):
         if request.method == 'GET':
-            print("ENTRO")
-            usuario = get_object_or_404(User, email = email)
-            radio = get_object_or_404(Radiografia, usuario= usuario)
-            return Response({"Datos": radio})
+            try:
+                email = request.query_params.get('email', None)
+                if not email:
+                    return JsonResponse({"error": "Parámetro 'email' no proporcionado"}, status=400)
+
+                usuario = get_object_or_404(User, email=email)
+                radiografias = Radiografia.objects.filter(usuario=usuario)
+
+                if radiografias.exists():
+                    # Convertimos las radiografías a una lista de diccionarios
+                    datos = [
+                        {
+                            "imagen_base64": r.imagen_base64,
+                            "explicacion": r.explicacion,
+                            "fecha_subida": r.fecha_subida.strftime('%Y-%m-%d %H:%M:%S'),
+                        }
+                        for r in radiografias
+                    ]
+                    return JsonResponse({"Info": datos}, status=200)
+                else:
+                    return JsonResponse({"error": "No se encontraron radiografías para este usuario"}, status=404)
+
+            except Exception as e:
+                return JsonResponse({"error": str(e)}, status=500)

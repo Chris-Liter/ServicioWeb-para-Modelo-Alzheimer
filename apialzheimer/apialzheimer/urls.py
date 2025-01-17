@@ -36,5 +36,5 @@ urlpatterns = [
     re_path(r'^crearusuario/', views.Clasificacion.Crear_Usuario),
     #re_path(r'^saveRadiografia/', views.Clasificacion.Crear_Radiografia),
     re_path(r'^make/', views.Clasificacion.MakePrediction),
-    path(r'^getRadio/<str:email>/', views.Clasificacion, name='traerRadio')
+    re_path(r'^getRadio/', views.Clasificacion.traerRadio)
 ]
