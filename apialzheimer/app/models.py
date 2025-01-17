@@ -13,6 +13,7 @@ class Radiografia(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name="radiografias")
     imagen_base64 = models.TextField()  # Para almacenar la imagen en Base64
     explicacion = models.TextField()
+    probabilidad = models.TextField()
     fecha_subida = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

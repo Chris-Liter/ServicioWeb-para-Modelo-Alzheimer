@@ -121,10 +121,10 @@ class Clasificacion:
         email = request.get('email')
         imagen64 = request.get('imagen64')
         explicacion = request.get('explicacion')
-
+        probabilidad = request.get('probabilidad')
         usuario = get_object_or_404(User, email=email)
         if usuario != '' and imagen64 != '' and explicacion != '':
-            radio = Radiografia(usuario = usuario, imagen_base64 = imagen64, explicacion = explicacion)
+            radio = Radiografia(usuario = usuario, imagen_base64 = imagen64, explicacion = explicacion, probabilidad = probabilidad)
             radio.save()
 
     @staticmethod
@@ -149,9 +149,11 @@ class Clasificacion:
             pred = resp.get("predicted_class")
             grad = resp.get("Explicacion")
             CLASE = pred
-            radiograph = {"email": email, "imagen64": foto, "explicacion": grad}
+            probabilidad = modeloCNN.certeza
+            print(probabilidad)
+            radiograph = {"email": email, "imagen64": foto, "explicacion": grad, "probabilidad": probabilidad}
             Clasificacion.crearRadiografia(radiograph)
-            return Response({"Radiografia": grad, "Prediccion": CLASE})
+            return Response({"Radiografia": grad, "Prediccion": CLASE, "Probabilidad": probabilidad})
 
         
     @csrf_exempt
@@ -165,7 +167,7 @@ class Clasificacion:
 
                 usuario = get_object_or_404(User, email=email)
                 radiografias = Radiografia.objects.filter(usuario=usuario)
-
+                #probabilidad = modeloCNN.modeloCNN.propab()
                 if radiografias.exists():
                     # Convertimos las radiografías a una lista de diccionarios
                     datos = [
@@ -173,6 +175,7 @@ class Clasificacion:
                             "imagen_base64": r.imagen_base64,
                             "explicacion": r.explicacion,
                             "fecha_subida": r.fecha_subida.strftime('%Y-%m-%d %H:%M:%S'),
+                            "probabilidad": r.probabilidad
                         }
                         for r in radiografias
                     ]
