@@ -49,7 +49,7 @@ class Clasificacion:
             img_array = img_array / 256.0  # Asegúrate de que esto esté de acuerdo con tu preprocesamiento
             
             # Ruta del modelo
-            nombre = "C:/Users/jorge/OneDrive/Documentos/Python/modelo/redCNN.h5"
+            nombre = "C:/Users/Anthony/Desktop/redCNN.h5"
             # Realizar la predicción con el modelo
             predicted_class_name = modeloCNN.modeloCNN.predecir_imagen(img_array, nombre)
             print(predicted_class_name)
@@ -139,10 +139,9 @@ class Clasificacion:
 
             json_data = json.dumps(js)
             email = request.data.get("email")
-            #print(json_data)
+            print(json_data)
             resp = Clasificacion.predict_image(str(foto))
             print('Se realiza la prediccion')
-            
             print('-------------------------')
             print(resp)
             print('-------------------------')
@@ -151,16 +150,35 @@ class Clasificacion:
             CLASE = pred
             radiograph = {"email": email, "imagen64": foto, "explicacion": grad}
             Clasificacion.crearRadiografia(radiograph)
-            return Response({"Datos guardados": "Radiografia", "Prediccion": CLASE})
-        print('nada')
-        return Response({"error": "Método no permitido"}, status=405)
-            
+            return Response({"Radiografia": grad, "Prediccion": CLASE})
+    
 
+        
     @csrf_exempt
-    #@api_view(['GET'])
-    def traerRadio(request, email):
+    @api_view(['GET'])
+    def traerRadio(request):
         if request.method == 'GET':
-            print("ENTRO")
-            usuario = get_object_or_404(User, email = email)
-            radio = get_object_or_404(Radiografia, usuario= usuario)
-            return Response({"Datos": radio})
+            try:
+                email = request.query_params.get('email', None)
+                if not email:
+                    return JsonResponse({"error": "Parámetro 'email' no proporcionado"}, status=400)
+
+                usuario = get_object_or_404(User, email=email)
+                radiografias = Radiografia.objects.filter(usuario=usuario)
+
+                if radiografias.exists():
+                    # Convertimos las radiografías a una lista de diccionarios
+                    datos = [
+                        {
+                            "imagen_base64": r.imagen_base64,
+                            "explicacion": r.explicacion,
+                            "fecha_subida": r.fecha_subida.strftime('%Y-%m-%d %H:%M:%S'),
+                        }
+                        for r in radiografias
+                    ]
+                    return JsonResponse({"Info": datos}, status=200)
+                else:
+                    return JsonResponse({"error": "No se encontraron radiografías para este usuario"}, status=404)
+
+            except Exception as e:
+                return JsonResponse({"error": str(e)}, status=500)
