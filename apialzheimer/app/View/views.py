@@ -89,7 +89,7 @@ class Clasificacion:
             # Buscar usuario en la base de datos
             user = User.objects.get(email=email, password=password)
             # Devolver respuesta si el usuario existe
-            return Response({ "message": email, "success": True } , status=200)
+            return Response({ "message": email, "name": user.name, "success": True } , status=200)
 
         except User.DoesNotExist:
             # Manejar cuando el usuario no existe
