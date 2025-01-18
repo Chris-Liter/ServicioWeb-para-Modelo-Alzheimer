@@ -33,7 +33,7 @@ urlpatterns = [
     re_path(r'^predecir/',views.Clasificacion.predict_image),
     re_path(r'^login/',views.Clasificacion.procesar_usuario),
     #re_path(r'^predecirIOJson/',views.Clasificacion.predecirIOJson),
-    re_path(r'^crearusuario/', views.Clasificacion.Crear_Usuario),
+    re_path(r'^createuser/', views.Clasificacion.Crear_Usuario),
     #re_path(r'^saveRadiografia/', views.Clasificacion.Crear_Radiografia),
     re_path(r'^make/', views.Clasificacion.MakePrediction),
     path(r'^getRadio/<str:email>/', views.Clasificacion, name='traerRadio')
