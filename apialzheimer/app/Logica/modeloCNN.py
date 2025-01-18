@@ -42,10 +42,16 @@ class modeloCNN():
         # Obtener la probabilidad de la clase predicha
         predicted_probability = predictions[0][predicted_class] * 100  # Multiplicamos por 100 para obtener el porcentaje
         certeza = predicted_probability
-        
+        print(certeza)
         modelo = loaded_model
         
         return predicted_class_name
+    
+    def propab():
+        global certeza
+        print("................")
+        print(certeza)
+        return certeza
     
     def explicar(img_array):
         explainer = IntegratedGradients()

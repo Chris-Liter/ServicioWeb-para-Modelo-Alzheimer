@@ -1,0 +1,23 @@
+# Archivos de la base de datos
+*.sqlite3
+# Archivos de cache generados automáticamente (compilados)
+__pycache__/
+*.pyc
+
+# Ignorar los __pycache__ de directorios específicos
+app/Logica/__pycache__/
+app/View/__pycache__/
+apialzheimer/__pycache__/
+app/migrations/__pycache__/
+
+# Otros archivos generados por el entorno de desarrollo
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.db
+
+# Archivos de configuración del entorno virtual (si los usas)
+venv/
+.env/
