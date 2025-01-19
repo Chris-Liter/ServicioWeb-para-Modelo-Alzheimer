@@ -165,9 +165,7 @@ class Clasificacion:
 
                 usuario = get_object_or_404(User, email=email)
                 radiografias = Radiografia.objects.filter(usuario=usuario)
-                #probabilidad = modeloCNN.modeloCNN.propab()
                 if radiografias.exists():
-                    # Convertimos las radiografías a una lista de diccionarios
                     datos = [
                         {
                             "imagen_base64": r.imagen_base64,
@@ -177,7 +175,7 @@ class Clasificacion:
                         }
                         for r in radiografias
                     ]
-                    return JsonResponse({"Info": datos}, status=200)
+                    return JsonResponse(datos, safe=False, status=200)
                 else:
                     return JsonResponse({"error": "No se encontraron radiografías para este usuario"}, status=404)
 
