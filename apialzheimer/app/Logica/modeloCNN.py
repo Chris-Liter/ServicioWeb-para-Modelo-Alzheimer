@@ -7,7 +7,7 @@ from app.Logica import modeloCNN
 import pickle
 import keras
 from tf_explain.core.integrated_gradients import IntegratedGradients
-from app.models import User, Radiografia
+from app.models import Paciente, Radiografia
 from django.shortcuts import get_object_or_404
 
 modelo = None
@@ -71,7 +71,7 @@ class modeloCNN():
         imagen64 = request.data.get('imagen64')
         explicacion = request.data.get('explicacion')
 
-        usuario = get_object_or_404(User, email=email)
+        usuario = get_object_or_404(Paciente, email=email)
         if usuario != '' and imagen64 != '' and explicacion != '':
             radio = Radiografia(usuario = usuario, imagen_base64 = imagen64, explicacion = explicacion)
             radio.save()

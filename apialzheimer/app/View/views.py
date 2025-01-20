@@ -14,7 +14,7 @@ from django.contrib.auth.hashers import check_password
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from app.models import User, Radiografia
+from app.models import Paciente, Radiografia, Medico
 from django.shortcuts import get_object_or_404
 
 
@@ -73,47 +73,35 @@ class Clasificacion:
             # Manejo de errores
             return {"error": str(e)}
 
-        
-
-        
-    #@staticmethod
-
     @csrf_exempt
     @api_view(['POST'])
     def procesar_usuario(request):
         try:
-            # Acceder directamente a los datos del body
             email = request.data.get('email')
             password = request.data.get('password')
+            user = Medico.objects.get(email=email, password=password)
+            return Response({ "message": user.id , "name": user.name, "success": True } , status=200)
 
-            # Buscar usuario en la base de datos
-            user = User.objects.get(email=email, password=password)
-            # Devolver respuesta si el usuario existe
-            return Response({ "message": email, "name": user.name, "success": True } , status=200)
-
-        except User.DoesNotExist:
-            # Manejar cuando el usuario no existe
+        except Medico.DoesNotExist:
             return Response({"error": "Usuario no encontrado"}, status=404)
 
         except Exception as e:
-            # Manejar cualquier otra excepción
             return Response({"error": str(e)}, status=500)
-
-    # Ahora puedes usar estos datos
-
-
                 
     @csrf_exempt
     @api_view(['POST'])
     def Crear_Usuario(request):
+        try:
+            name = request.data.get('username')
+            email = request.data.get('email')
+            password = request.data.get('password')
+            
+            usuario = Medico(name = name, email = email, password = password)
+            usuario.save()
 
-        name = request.data.get('username')
-        email = request.data.get('email')
-        password = request.data.get('password')
-        
-        usuario = User(name = name, email = email, password = password)
-        usuario.save()
-        return Response({"name: ": name, "email: ": email, "password: ": password })
+            return Response({"message: ": "Ok" }, status=200)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
 
 
     @staticmethod
@@ -196,6 +184,23 @@ class Clasificacion:
             user.name = name
             user.save()
             return Response({"username": user.name, "email": user.email}, status=200)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
+        
+    @csrf_exempt
+    @api_view(['POST'])
+    def registerPatient(request):
+        try:
+            dni = request.data.get('dni')
+            name = request.data.get('name')
+            gender = request.data.get('gender')
+            age = request.data.get('age')
+            email = request.data.get('email')
+            #doctor_email = request.data.get('doctor_email')
+            #doctor = get_object_or_404(User, email=doctor_email)
+            paciente = Paciente(dni = dni, name = name, gender = gender, age = age, email = email, doctor = doctor)
+            paciente.save()
+            return Response({"message": "Usuario registrado correctamente"}, status=200)
         except Exception as e:
             return Response({"error": str(e)}, status=500)
     

@@ -1,6 +1,7 @@
 from django.db import models
 
-class User(models.Model):
+class Medico(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)  # Nombre del producto
     email = models.CharField(max_length=255, unique=True)  # Precio
     password = models.CharField(max_length=255)  # Inventario
@@ -8,15 +9,26 @@ class User(models.Model):
     def __str__(self):
         return self.name
     
+class Paciente(models.Model):
+    id = models.AutoField(primary_key=True)
+    dni = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
+    gender = models.CharField(max_length=255)
+    age = models.IntegerField()
+    email = models.EmailField(max_length=255, unique=True)
+    doctor = models.ForeignKey(Medico, on_delete=models.CASCADE, related_name="pacientes")
+
+    def __str__(self):
+        return self.name
 
 class Radiografia(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name="radiografias")
-    imagen_base64 = models.TextField()  # Para almacenar la imagen en Base64
+    id = models.AutoField(primary_key=True)
+    imagen_base64 = models.TextField()
     explicacion = models.TextField()
     probabilidad = models.TextField()
     fecha_subida = models.DateTimeField(auto_now_add=True)
+    usuario = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name="radiografias")
 
     def __str__(self):
-        return f"Radiografía de {self.usuario.nombre} subida el {self.fecha_subida}"
-
+        return self.usuario.name
 
