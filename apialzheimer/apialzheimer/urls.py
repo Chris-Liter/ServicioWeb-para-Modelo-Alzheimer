@@ -40,5 +40,6 @@ urlpatterns = [
     re_path(r'^getprofile/', views.Clasificacion.getProfile),
     re_path(r'^editprofile/', views.Clasificacion.editProfile),
     re_path(r'^updatepassword/', views.Clasificacion.editPassword),
+    re_path(r'^registerPatient', views.Clasificacion.registerPatient)
 
 ]

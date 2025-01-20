@@ -49,7 +49,7 @@ class Clasificacion:
             img_array = img_array / 256.0  # Asegúrate de que esto esté de acuerdo con tu preprocesamiento
             
             # Ruta del modelo
-            nombre = "C:/Users/Anthony/Desktop/redCNN.h5"
+            nombre = "C:/Users/jorge/OneDrive/Documentos/Python/modelo/redCNN.h5"
             # Realizar la predicción con el modelo
             predicted_class_name = modeloCNN.modeloCNN.predecir_imagen(img_array, nombre)
             print(predicted_class_name)
@@ -106,11 +106,10 @@ class Clasificacion:
 
     @staticmethod
     def crearRadiografia(request):
-        email = request.get('email')
-        imagen64 = request.get('imagen64')
+        usuario = request.get('usuario')
+        imagen64 = request.get('imagen_base64')
         explicacion = request.get('explicacion')
         probabilidad = request.get('probabilidad')
-        usuario = get_object_or_404(User, email=email)
         if usuario != '' and imagen64 != '' and explicacion != '':
             radio = Radiografia(usuario = usuario, imagen_base64 = imagen64, explicacion = explicacion, probabilidad = probabilidad)
             radio.save()
@@ -123,10 +122,6 @@ class Clasificacion:
         global CLASE
         if request.method =='POST':
             foto = request.data.get("foto")
-            js = {"foto": foto }
-
-            #json_data = json.dumps(js)
-            email = request.data.get("email")
             resp = Clasificacion.predict_image(str(foto))
             print('Se realiza la prediccion')
             print('-------------------------')
@@ -136,8 +131,9 @@ class Clasificacion:
             grad = resp.get("Explicacion")
             CLASE = pred
             probabilidad = modeloCNN.certeza
-            print(probabilidad)
-            radiograph = {"email": email, "imagen64": foto, "explicacion": grad, "probabilidad": probabilidad}
+            email = request.data.get("email")
+            usuario = get_object_or_404(Paciente, email=email)
+            radiograph = {"imagen_base64": foto, "explicacion": grad, "probabilidad": probabilidad, "usuario": usuario}
             Clasificacion.crearRadiografia(radiograph)
             return Response({"Radiografia": grad, "Prediccion": CLASE, "Probabilidad": probabilidad})
 
@@ -151,7 +147,7 @@ class Clasificacion:
                 if not email:
                     return JsonResponse({"error": "Parámetro 'email' no proporcionado"}, status=400)
 
-                usuario = get_object_or_404(User, email=email)
+                usuario = get_object_or_404(Paciente, email=email)
                 radiografias = Radiografia.objects.filter(usuario=usuario)
                 if radiografias.exists():
                     datos = [
@@ -178,7 +174,7 @@ class Clasificacion:
             email = request.data.get('emailFromLocalStorage')
             new_email = request.data.get('email')
             name = request.data.get('username')
-            user = get_object_or_404(User, email=email)
+            user = get_object_or_404(Medico, email=email)
             if new_email and new_email != email:
                 user.email = new_email
             user.name = name
@@ -196,8 +192,8 @@ class Clasificacion:
             gender = request.data.get('gender')
             age = request.data.get('age')
             email = request.data.get('email')
-            #doctor_email = request.data.get('doctor_email')
-            #doctor = get_object_or_404(User, email=doctor_email)
+            doctor_email = request.data.get('doctor_email')
+            doctor = get_object_or_404(Medico, email=doctor_email)
             paciente = Paciente(dni = dni, name = name, gender = gender, age = age, email = email, doctor = doctor)
             paciente.save()
             return Response({"message": "Usuario registrado correctamente"}, status=200)
@@ -210,7 +206,7 @@ class Clasificacion:
         try:
             email = request.data.get('email')
             password = request.data.get('password')
-            user = get_object_or_404(User, email=email)
+            user = get_object_or_404(Medico, email=email)
             if password:
                 user.password = password
             user.save()
@@ -225,7 +221,10 @@ class Clasificacion:
             email = request.query_params.get('email', None)
             if not email:
                 return Response({"error": "Parámetro 'email' no proporcionado"}, status=400)
-            user = get_object_or_404(User, email=email)
+            user = get_object_or_404(Medico, email=email)
             return Response({"username": user.name, "email": user.email}, status=200)
         except Exception as e:
             return Response({"error": str(e)}, status=500)
+        
+
+    
