@@ -181,3 +181,46 @@ class Clasificacion:
 
             except Exception as e:
                 return JsonResponse({"error": str(e)}, status=500)
+            
+    @csrf_exempt
+    @api_view(['PUT'])
+    def editProfile(request):
+        try:
+            print(request.data)
+            email = request.data.get('emailFromLocalStorage')
+            new_email = request.data.get('email')
+            name = request.data.get('username')
+            user = get_object_or_404(User, email=email)
+            if new_email and new_email != email:
+                user.email = new_email
+            user.name = name
+            user.save()
+            return Response({"username": user.name, "email": user.email}, status=200)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
+    
+    @csrf_exempt
+    @api_view(['PUT'])
+    def editPassword(request):
+        try:
+            email = request.data.get('email')
+            password = request.data.get('password')
+            user = get_object_or_404(User, email=email)
+            if password:
+                user.password = password
+            user.save()
+            return Response({"message": "Usuario actualizado correctamente"}, status=200)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
+        
+    @csrf_exempt
+    @api_view(['GET'])
+    def getProfile(request):
+        try:
+            email = request.query_params.get('email', None)
+            if not email:
+                return Response({"error": "Parámetro 'email' no proporcionado"}, status=400)
+            user = get_object_or_404(User, email=email)
+            return Response({"username": user.name, "email": user.email}, status=200)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)

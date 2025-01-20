@@ -36,5 +36,9 @@ urlpatterns = [
     re_path(r'^createuser/', views.Clasificacion.Crear_Usuario),
     #re_path(r'^saveRadiografia/', views.Clasificacion.Crear_Radiografia),
     re_path(r'^make/', views.Clasificacion.MakePrediction),
-    re_path(r'^getRadio/', views.Clasificacion.traerRadio)
+    re_path(r'^getRadio/', views.Clasificacion.traerRadio),
+    re_path(r'^getprofile/', views.Clasificacion.getProfile),
+    re_path(r'^editprofile/', views.Clasificacion.editProfile),
+    re_path(r'^updatepassword/', views.Clasificacion.editPassword),
+
 ]
