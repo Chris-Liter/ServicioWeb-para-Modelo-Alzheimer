@@ -83,10 +83,6 @@ MIDDLEWARE_CLASSES = [
     'corsheaders.middleware.CorsPostCsrfMiddleware',#
 ]
 
-
-
-#CORS_ALLOW_ALL_ORIGINS = True  # Permite todas las solicitudes (no recomendado en producción)
-
 CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = "apialzheimer.urls"
@@ -141,7 +137,6 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
