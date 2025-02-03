@@ -23,3 +23,4 @@ class Radiografia(models.Model):
     fecha_subida = models.DateTimeField(auto_now_add=True)
     dementia_level = models.CharField(max_length=255)
     usuario = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name="radiografias")
+    recomendacion = models.TextField(null=True, blank=True)

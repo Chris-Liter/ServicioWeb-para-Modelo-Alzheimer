@@ -42,5 +42,5 @@ urlpatterns = [
     re_path(r'^updatepassword/', views.Clasificacion.editPassword),
     re_path(r'^createPatient/', views.Clasificacion.createPatient),
     re_path(r'^getPatients/', views.Clasificacion.getPatients),
-
+    re_path(r'^modelo/', views.Clasificacion.chatgpt)
 ]

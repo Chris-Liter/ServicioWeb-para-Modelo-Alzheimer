@@ -153,11 +153,13 @@ class Clasificacion:
                 if radiografias.exists():
                     datos = [
                         {
+                            "id": r.id,
                             "imagen_base64": r.imagen_base64,
                             "explicacion": r.explicacion,
                             "fecha_subida": r.fecha_subida.strftime('%Y-%m-%d %H:%M:%S'),
                             "probabilidad": r.probabilidad,
-                            "dementia_level": r.dementia_level
+                            "dementia_level": r.dementia_level,
+                            "recomendacion": r.recomendacion if r.recomendacion else None
                         }
                         for r in radiografias
                     ]
@@ -210,3 +212,19 @@ class Clasificacion:
             return Response({"username": user.name, "email": user.email}, status=200)
         except Exception as e:
             return Response({"error": str(e)}, status=500)
+        
+
+    @csrf_exempt
+    @api_view(['POST'])
+    def chatgpt(request):
+        if request.method == 'POST':
+            id = request.data.get('id')
+            demencia = request.data.get('demencia')
+            probabilidad = request.data.get('probabilidad')
+            user_message = f'Tengo una radiografía cerebral y una imagen explicativa generada con gradiente integrado. Los píxeles blancos destacan las áreas clave que el modelo ha usado para su predicción y requieren especial atención médica, ya que pueden indicar deterioro cerebral. El modelo ha clasificado la imagen con un nivel de demencia de {probabilidad} con probabilidad del {demencia} de acierto. Genera un reporte explicando la importancia de las zonas resaltadas. Además, proporciona dos recomendaciones cortas de cuidados adaptadas a la clase de demencia predicha, enfocadas en mejorar la calidad de vida del paciente. El reporte debe ser claro, técnico pero comprensible, sin títulos ni encabezados, en un solo párrafo de 175 palabras.'
+            print(user_message)
+            ref = modeloCNN.modeloCNN.solicitudIA(user_message)
+            radiography = get_object_or_404(Radiografia, id=id)
+            radiography.recomendacion = ref
+            radiography.save()
+            return Response({'Respuesta': ref})
